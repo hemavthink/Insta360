@@ -1,0 +1,244 @@
+<resources>
+    <string name="app_name">SDK_Demo</string>
+
+    <!-- Main Activity -->
+    <string name="main_toolbar_title">SDK DEMO</string>
+    <string name="main_full_demo_button">Full Demo</string>
+    <string name="main_full_demo_desc">Show the overall process of Camera Connect, Obtain SdCard/Battery status, Open Preview Stream, Record/Capture/Live</string>
+    <string name="main_item_desc_connect">Connect/Disconnect Camera</string>
+    <string name="main_connect_wifi_button">Connect by WIFI</string>
+    <string name="main_connect_usb_button">Connect by USB</string>
+    <string name="main_disconnect_button">Disconnect</string>
+    <string name="main_item_desc_camera_fun">Camera Function -- Need to connect camera first</string>
+    <string name="main_capture_button">Capture</string>
+    <string name="main_capture_desc">Normal Capture &amp; Record, HDR Capture &amp; Record, Interval Shooting, TimeLapse…</string>
+    <string name="main_preview_button">Preview</string>
+    <string name="main_preview_desc">Normal Mode. Can switch the aspect ratio, adjust the angle of view, switch panorama and plane mode</string>
+    <string name="main_preview2_button">Preview2</string>
+    <string name="main_preview2_desc">Use Custom SurfaceView</string>
+    <string name="main_preview3_button">Preview3</string>
+    <string name="main_preview3_desc">Get Bitmap by ImageReader</string>
+    <string name="main_live_button">Live</string>
+    <string name="main_live_desc">Can customize push streaming parameters, use panorama or screen live mode</string>
+    <string name="main_osc_button">OSC</string>
+    <string name="main_osc_desc">OSC protocol controls the camera and can be used without sdk. For more details, please refer to Google documentation</string>
+    <string name="main_setting_button">Settings</string>
+    <string name="main_setting_desc">Include EV value, beep switch, gyroscope correction, formatted SD card, etc.</string>
+    <string name="main_item_desc_other">Other</string>
+    <string name="main_camera_file_button">Camera file list</string>
+    <string name="main_camera_file_desc">Scanning all the files of the camera</string>
+    <string name="main_play_button">Play &amp; Export</string>
+    <string name="main_play_desc">Show play and export video and image (panorama and thumbnail), both local and camera files are available</string>
+    <string name="main_stitch_button">HDR stitching</string>
+    <string name="main_stitch_desc">Show HDR stitching and playback. Only local images can be stitch, please download from the camera first</string>
+    <string name="main_fw_upgrade_button">Firmware upgrade</string>
+    <string name="main_fw_upgrade_desc">Upload the firmware upgrade package (.bin file) to the camera for upgrade</string>
+    <string name="main_toast_camera_connected">Camera connected</string>
+    <string name="main_toast_camera_disconnected">Camera disconnected</string>
+    <string name="main_toast_camera_connect_error">Camera connect failed</string>
+    <string name="main_toast_sd_enabled">SD card is enabled</string>
+    <string name="main_toast_sd_disabled">SD card may be some error</string>
+
+    <!-- Full Demo Activity -->
+    <string name="full_demo_sd_remaining_space">SD Card: remain %s</string>
+    <string name="full_demo_sd_error">SD Card: Not insert or Not enough free space</string>
+    <string name="full_demo_battery_level">Battery：%d%%</string>
+    <string name="full_demo_charging">Charging</string>
+    <string name="full_demo_record">Record</string>
+    <string name="full_demo_capture">Capture</string>
+    <string name="full_demo_live">Live</string>
+    <string name="full_demo_start">Start</string>
+    <string name="full_demo_stop">Stop</string>
+    <string name="full_demo_prompt_connect_camera">Please connect camera</string>
+    <string name="full_demo_connect_by_wifi">By WIFI</string>
+    <string name="full_demo_connect_by_usb">By USB</string>
+    <string name="full_demo_live_start">Live Started</string>
+    <string name="full_demo_live_error">Live Error</string>
+
+    <!-- Capture Activity -->
+    <string name="capture_toolbar_title">Capture &amp; Listener</string>
+    <string name="capture_prompt_nanos_osc">Note: Nanos Camera doesn\'t support the API on this page. You need to use the OSC protocol to control the camera. For details, refer to OscActivity.</string>
+    <string name="capture_normal_capture">Normal Capture</string>
+    <string name="capture_normal_pano_capture">Insta Pano Mode Normal Capture</string>
+    <string name="capture_hdr_capture">HDR Capture</string>
+    <string name="capture_hdr_pano_capture">Insta Pano Mode HDR Capture</string>
+    <string name="capture_interval_shooting_start">Start Interval Capture</string>
+    <string name="capture_interval_shooting_stop">Stop Interval Capture</string>
+    <string name="capture_normal_record_start">Start Normal Record</string>
+    <string name="capture_normal_record_stop">Stop Normal Record</string>
+    <string name="capture_hdr_record_start">Start HDR Record</string>
+    <string name="capture_hdr_record_stop">Stop HDR Record</string>
+    <string name="capture_timelapse_start">Start TimeLapse</string>
+    <string name="capture_timelapse_stop">Stop TimeLapse</string>
+    <string name="capture_capture_starting">Capture Starting...</string>
+    <string name="capture_capture_working">Capture Working...</string>
+    <string name="capture_capture_stopping">Capture Stopping...</string>
+    <string name="capture_capture_finished">Capture Finished</string>
+    <string name="capture_capture_time">CaptureTime: %s</string>
+    <string name="capture_capture_count">Capture Count: %d</string>
+    <string name="capture_play_camera_file">Play Camera File</string>
+    <string name="capture_play_local_file">Download and Play Local File</string>
+    <string name="capture_toast_sd_card_error">No SD card inserted or Not enough free space</string>
+
+    <!-- Preview Activity -->
+    <string name="preview_toolbar_title">Preview -- Normal Mode</string>
+    <string name="preview_angle">Preview Type:</string>
+    <string name="preview_mode_normal">Normal</string>
+    <string name="preview_mode_fisheye">Fisheye</string>
+    <string name="preview_mode_perspective">Perspective</string>
+    <string name="preview_mode_plane">Plane</string>
+    <string name="stab_type">Stabilizing Type:</string>
+    <string name="stab_type_auto">Auto Select</string>
+    <string name="stab_type_panorama">For Panorama</string>
+    <string name="stab_type_calibrate_horizon">Align the horizon only</string>
+    <string name="stab_type_footage_motion_smooth">Smooth footage motion, no horizon alignment</string>
+    <string name="stab_type_off">OFF</string>
+    <string name="choose_resolution">Resolution Selection:</string>
+
+    <!-- Preview2 Activity -->
+    <string name="preview2_toolbar_title">Preview -- Custom SurfaceView</string>
+    <string name="preview2_show">Show</string>
+    <string name="preview2_hide">Hide</string>
+
+    <!-- Preview3 Activity -->
+    <string name="preview3_toolbar_title">Preview -- Get Bitmap by ImageReader</string>
+
+    <!-- Live Activity -->
+    <string name="live_toolbar_title">Live</string>
+    <string name="live_paramter_rtmp">RTMP:</string>
+    <string name="live_paramter_width">width:</string>
+    <string name="live_paramter_height">height:</string>
+    <string name="live_paramter_fps">fps:</string>
+    <string name="live_paramter_bitrate">bitrate:</string>
+    <string name="live_paramter_panorama">isPanorama</string>
+    <string name="live_paramter_audio_enabled">Enable Audio</string>
+    <string name="live_start_live">Start Live</string>
+    <string name="live_stop_live">Stop Live</string>
+    <string name="live_push_started">Live Push Started</string>
+    <string name="live_push_finished">Live Push Finished</string>
+    <string name="live_push_error">Live Push Error</string>
+    <string name="live_fps_update">Living...  FPS: %d</string>
+    <string name="live_toast_input_parameters">Please input all parameters</string>
+    <string name="live_toast_invalid_rtmp">Rtmp address is not valid</string>
+    <string name="live_bind_mobile_network_desc">Bind mobile network, then you can use 4G to push live streaming when connecting camera by WIFI</string>
+    <string name="live_bind">Bind</string>
+    <string name="live_unbind">Unbind</string>
+    <string name="live_toast_bind_mobile_network_successful">Bind mobile network successful</string>
+    <string name="live_toast_bind_mobile_network_failed">Bind mobile network failed</string>
+    <string name="live_toast_unbind_mobile_network">Unbind mobile network</string>
+    <string name="live_toast_unbind_mobile_network_when_lost">Lost mobile network, temporarily unbind</string>
+
+    <!-- OSC Activity -->
+    <string name="osc_toolbar_title">OSC</string>
+    <string name="osc_support_options">Support Options</string>
+    <string name="osc_take_picture">Take Picture (HDR)</string>
+    <string name="osc_start_record">Start Record</string>
+    <string name="osc_stop_record">Stop Record</string>
+    <string name="osc_dialog_title_send_request">Send Request</string>
+    <string name="osc_dialog_msg_send_request">Sending request, please wait...</string>
+    <string name="osc_dialog_title_success">Successful</string>
+    <string name="osc_dialog_msg_no_data">No data returned</string>
+    <string name="osc_dialog_title_failed">Failed</string>
+    <string name="osc_dialog_title_downloading">Downloading Files</string>
+    <string name="osc_dialog_msg_downloading">"Total %1$d, Successful %2$d, Failed %3$d</string>
+    <string name="osc_toast_connect_camera">Please connect to camera first</string>
+
+    <!-- More Setting Activity -->
+    <string name="setting_toolbar_title">Camera Settings</string>
+    <string name="setting_item_title_attribute">AAA Settings</string>
+    <string name="setting_item_title_other">Other Settings</string>
+    <string name="setting_fun_mode_normal_capture">Normal Capture</string>
+    <string name="setting_fun_mode_capture">HDR Capture</string>
+    <string name="setting_fun_mode_interval_shooting">Interval Capture</string>
+    <string name="setting_fun_mode_night_scene">Night Scene Capture</string>
+    <string name="setting_fun_mode_burst">Burst Capture</string>
+    <string name="setting_fun_mode_normal_record">Normal Record</string>
+    <string name="setting_fun_mode_hdr_record">HDR Record</string>
+    <string name="setting_fun_mode_bullet_time">Bullet Time</string>
+    <string name="setting_fun_mode_timelapse">TimeLapse</string>
+    <string name="setting_fun_mode_timeshift">TimeShift</string>
+    <string name="setting_select_fun_mode">Please select function mode when setting: </string>
+    <string name="setting_ev_value">EV value: </string>
+    <string name="setting_exposure_mode">Exposure mode: </string>
+    <string name="setting_exposure_mode_auto">Auto</string>
+    <string name="setting_exposure_mode_iso_first">ISO First</string>
+    <string name="setting_exposure_mode_shutter_first">Shutter First</string>
+    <string name="setting_exposure_mode_manual">Manual</string>
+    <string name="setting_iso">ISO: </string>
+    <string name="setting_iso_top_limit">ISO Top Limit: </string>
+    <string name="setting_shutter_mode">Shutter Mode: </string>
+    <string name="setting_shutter_mode_off">OFF</string>
+    <string name="setting_shutter_mode_sport">Indoor low-light stability</string>
+    <string name="setting_shutter_mode_faster">Faster</string>
+    <string name="setting_shutter_speed">Shutter Speed(s): </string>
+    <string name="setting_wb">White Balance: </string>
+    <string name="setting_wb_auto">Auto</string>
+    <string name="setting_wb_2700k">2700K</string>
+    <string name="setting_wb_4000k">4000K</string>
+    <string name="setting_wb_5000k">5000K</string>
+    <string name="setting_wb_6500k">6500K</string>
+    <string name="setting_wb_7500k">7500K</string>
+    <string name="setting_apply">Apply</string>
+    <string name="setting_camera_beep">Camera Beep: </string>
+    <string name="setting_calibrate_gyro">Calibrate Gyro</string>
+    <string name="setting_format_sd">Format SD Card</string>
+    <string name="setting_dialog_msg_gyro_calirate_prompt">Before calibrate, please stand the camera upright on a stable and level surface.</string>
+    <string name="setting_dialog_msg_gyro_calirating">Gyro calibrating...</string>
+    <string name="setting_dialog_msg_gyro_calirate_success">Gyro calibrate successful</string>
+    <string name="setting_dialog_msg_gyro_calirate_failed">Gyro calibrate failed</string>
+    <string name="setting_dialog_msg_format_prompt">Confirm format SD card?</string>
+    <string name="setting_dialog_msg_formatting">Formatting...</string>
+    <string name="setting_dialog_msg_format_success">Format successful</string>
+    <string name="setting_dialog_msg_format_failed">Format failed</string>
+    <string name="setting_dialog_msg_camera_connect_error">Please connect to camera by WIFI first</string>
+    <string name="setting_dialog_cancel">Cancel</string>
+    <string name="setting_dialog_start">Start</string>
+    <string name="setting_dialog_sure">Sure</string>
+    <string name="setting_dialog_ok">OK</string>
+
+    <!-- Camera Files Activity -->
+    <string name="camera_files_toolbar_title">Scanning Camera Files</string>
+    <string name="camera_files_all">All</string>
+    <string name="camera_files_image">Images</string>
+    <string name="camera_files_video">Videos</string>
+    <string name="camera_files_operate_desc">Click to play, long press to delete</string>
+    <string name="camera_files_toast_success">Delete Successfully</string>
+    <string name="camera_files_toast_fail">Delete Failed</string>
+
+    <!-- Stitch Activity -->
+    <string name="stitch_toolbar_title">HDR Stitching</string>
+    <string name="stitch_original">Original Effect</string>
+    <string name="stitch_hdr">HDR Stitching Effect</string>
+
+    <!-- Play And Export Activity -->
+    <string name="play_toolbar_title">Play &amp; Export</string>
+    <string name="play_export_original">Export\nPanorama</string>
+    <string name="play_export_thumbnail">Export\nThumbnail</string>
+    <string name="play_hdr_stitch">HDR Stitch</string>
+    <string name="play_original">Original</string>
+    <string name="play_toast_empty_path">Empty path</string>
+    <string name="play_toast_download_first">Please download file to local first</string>
+    <string name="play_toast_not_hdr">This is not HDR photo</string>
+    <string name="play_toast_load_finish">Load finish</string>
+    <string name="play_toast_fail_desc">onFail(%d)  %s</string>
+    <string name="export_dialog_msg_exporting">Exporting...</string>
+    <string name="export_dialog_msg_export_success">Export successful.\nSave directory: %s</string>
+    <string name="export_dialog_msg_export_failed">Export failed(%d)</string>
+    <string name="export_dialog_msg_export_stopped">Export Stopped</string>
+    <string name="export_dialog_msg_export_progress">Export progress： %s</string>
+    <string name="export_dialog_msg_hdr_stitching">HDR Stitching...</string>
+    <string name="export_dialog_stop">Stop</string>
+    <string name="export_dialog_ok">OK</string>
+
+    <!-- Firmware Upgrade Activity -->
+    <string name="fw_toolbar_title">Firmware upgrade</string>
+    <string name="fw_prompt">Note: Please do not upload the wrong file to the camera to avoid bricking.\nExample: Do not upload OneX firmware upgrade package to OneX2 camera.</string>
+    <string name="fw_choose_file">Select firmware upgrade file</string>
+    <string name="fw_file_path">File Path：%s</string>
+    <string name="fw_start_upgrade">Start Upgrade</string>
+    <string name="fw_upgrade_success">Upload successfully, wait for the camera to upgrade and restart.</string>
+    <string name="fw_upgrade_fail">Upload failed, error code: %1$d, message: %2$s</string>
+    <string name="fw_upgrade_cancel">Upload cancelled</string>
+    <string name="fw_upgrade_progress">Upload progress: %s</string>
+    <string name="fw_toast_choose_file">Please select the firmware file to upload first</string>
+</resources>
