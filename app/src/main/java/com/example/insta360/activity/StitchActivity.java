@@ -1,8 +1,11 @@
 package com.example.insta360.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,24 +21,34 @@ import com.example.insta360.R;
 import java.lang.ref.WeakReference;
 
 public class StitchActivity extends AppCompatActivity {
+    private static final String WORK_URLS = "CAMERA_FILE_PATH";
 
-    public static final String COPY_DIR = MyApp.getInstance().getCacheDir() + "/hdr_source";
-    private static final String[] URLS = new String[]{
-            COPY_DIR + "/img1.jpg",
-            COPY_DIR + "/img2.jpg",
-            COPY_DIR + "/img3.jpg"
-    };
-    private WorkWrapper mWorkWrapper = new WorkWrapper(URLS);
+    private WorkWrapper mWorkWrapper;
     private String mOutputPath = MyApp.getInstance().getFilesDir() + "/hdr_generate/generate.jpg";
     private StitchTask mStitchTask;
 
     private InstaImagePlayerView mImagePlayerView;
 
+    public static void launchActivity(Context context, String[] urls) {
+        Intent intent = new Intent(context, StitchActivity.class);
+        intent.putExtra(WORK_URLS, urls);
+        context.startActivity(intent);
+    }
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stitch);
         setTitle(R.string.stitch_toolbar_title);
+
+
+
+        String[] urls = getIntent().getStringArrayExtra(WORK_URLS);
+        if (urls == null) {
+            finish();
+            Toast.makeText(this, R.string.play_toast_empty_path, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mWorkWrapper = new WorkWrapper(urls);
         bindViews();
 
         // 初始显示无HDR效果的图片
@@ -46,15 +59,6 @@ public class StitchActivity extends AppCompatActivity {
     private void bindViews() {
         mImagePlayerView = findViewById(R.id.player_image);
         mImagePlayerView.setLifecycle(getLifecycle());
-
-        RadioGroup rgStitchMode = findViewById(R.id.rg_stitch_mode);
-        rgStitchMode.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.rb_none) {
-                showGenerateResult(false);
-            } else if (checkedId == R.id.rb_hdr) {
-                startGenerate();
-            }
-        });
     }
 
     private void startGenerate() {
