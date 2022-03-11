@@ -14,6 +14,9 @@ import com.arashivision.insta360.basecamera.camera.CameraType;
 import com.arashivision.sdk.demo.util.TimeFormat;
 import com.arashivision.sdkcamera.camera.InstaCameraManager;
 import com.arashivision.sdkcamera.camera.callback.ICaptureStatusListener;
+import com.arashivision.sdkcamera.camera.callback.ILiveStatusListener;
+import com.arashivision.sdkcamera.camera.callback.IPreviewStatusListener;
+import com.arashivision.sdkcamera.camera.resolution.PreviewStreamResolution;
 import com.example.insta360.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -26,7 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CaptureActivity extends BaseObserveCameraActivity implements ICaptureStatusListener {
+public class CaptureActivity extends BaseObserveCameraActivity implements ICaptureStatusListener , IPreviewStatusListener, ILiveStatusListener {
 
     private TextView mTvCaptureStatus;
     private TextView mTvCaptureTime;
@@ -39,6 +42,10 @@ public class CaptureActivity extends BaseObserveCameraActivity implements ICaptu
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture);
         setTitle(R.string.capture_toolbar_title);
+        // Capture Status Callback
+        InstaCameraManager.getInstance().setCaptureStatusListener(this);
+        InstaCameraManager.getInstance().setPreviewStatusChangedListener(this);
+        checkToRestartCameraPreviewStream();
         bindViews();
 
 
@@ -50,8 +57,33 @@ public class CaptureActivity extends BaseObserveCameraActivity implements ICaptu
         });
 
 
-        // Capture Status Callback
-        InstaCameraManager.getInstance().setCaptureStatusListener(this);
+
+    }
+
+    private boolean checkToRestartCameraPreviewStream() {
+        int newPreviewType = getNewPreviewType();
+        PreviewStreamResolution newResolution = getPreviewResolution(newPreviewType);
+        InstaCameraManager.getInstance().closePreviewStream();
+        InstaCameraManager.getInstance().startPreviewStream(newResolution, newPreviewType);
+        return true;
+    }
+
+    // Get the preview mode currently to be turned on
+    private int getNewPreviewType() {
+        return InstaCameraManager.PREVIEW_TYPE_LIVE;
+    }
+
+    // Here, select 5.7k for recording, and select default from the support list for others
+    private PreviewStreamResolution getPreviewResolution(int previewType) {
+        // 自选分辨率（只要您觉着效果OK即可）
+        // Optional resolution (as long as you feel the effect is OK)
+        if (previewType == InstaCameraManager.PREVIEW_TYPE_RECORD) {
+            return PreviewStreamResolution.STREAM_5760_2880_30FPS;
+        }
+
+        // 或从当前相机的拍摄模式支持列表中任选其一
+        // Or choose one of the supported shooting modes of the current camera
+        return InstaCameraManager.getInstance().getSupportedPreviewStreamResolution(previewType).get(0);
     }
 
     private void bindViews() {
