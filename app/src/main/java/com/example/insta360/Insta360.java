@@ -2,6 +2,7 @@ package com.example.insta360;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 
 import android.os.Bundle;
@@ -9,7 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,23 +37,26 @@ import com.arashivision.sdkmedia.player.capture.InstaCapturePlayerView;
 import com.arashivision.sdkmedia.player.listener.PlayerViewListener;
 import com.example.insta360.util.NetworkManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Insta360 extends AppCompatActivity implements ICameraChangedCallback,
         IPreviewStatusListener, ICaptureStatusListener, ILiveStatusListener {
 
     private ViewGroup mLayoutLoading;
-    private Group mLayoutPromptConnectCamera;
     private Group mLayoutPlayer;
     private InstaCapturePlayerView mCapturePlayerView;
 
-    private ImageView mBtnCameraWork;
-
+    private Button mBtnCameraWork;
+    ToggleButton connectionSwitch;
 
     private boolean mNeedToRestartPreview;
     private boolean mIsCaptureButtonClicked;
     private int mCurPreviewType = -1;
     private PreviewStreamResolution mCurPreviewResolution = null;
+    private Toolbar toolbar;
+    private LinearLayout layoutCameraArea;
+    private boolean mConnectionSwitchEnabled = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,9 +64,15 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_insta360);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        bindNormalViews();
         bindPlayerViews();
+        toolbar = (Toolbar) findViewById(R.id.tbHeader);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        layoutCameraArea = (LinearLayout) findViewById(R.id.shoot_area);
 
+        connectionSwitch = toolbar.findViewById(R.id.connection_switch);
+        setToggleListener();
         InstaCameraManager cameraManager = InstaCameraManager.getInstance();
         if (isCameraConnected()) {
             onCameraStatusChanged(true);
@@ -69,15 +83,35 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         cameraManager.registerCameraChangedCallback(this);
     }
 
-    private void bindNormalViews() {
-        mLayoutLoading = findViewById(R.id.layout_loading);
-        mLayoutPromptConnectCamera = findViewById(R.id.group_prompt_connect_camera);
+    private void setToggleListener() {
+        connectionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mLayoutLoading = findViewById(R.id.layout_loading);
+                if (isChecked) {
+                    layoutCameraArea.setVisibility(View.VISIBLE);
+                    openCamera(InstaCameraManager.CONNECT_TYPE_WIFI);
+                } else {
+                    layoutCameraArea.setVisibility(View.GONE);
+                }
 
-        findViewById(R.id.btn_connect_by_wifi).setOnClickListener(v -> {
-            openCamera(InstaCameraManager.CONNECT_TYPE_WIFI);
+
+            }
         });
-
+        setToggleChange();
     }
+
+    private void setToggleChange() {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                if (!mConnectionSwitchEnabled) {
+                    connectionSwitch.setChecked(false);
+                }
+                connectionSwitch.setEnabled(mConnectionSwitchEnabled);
+            }
+        });
+    }
+
 
     private void bindPlayerViews() {
 
@@ -117,24 +151,19 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mNeedToRestartPreview = true;
     }
 
-    // 获取当前要开启的预览模式
     // Get the preview mode currently to be turned on
     private int getNewPreviewType() {
         return InstaCameraManager.PREVIEW_TYPE_NORMAL;
     }
 
-    // 获取预览的分辨率
-    // 此处为，录像选择5.7k，其他从支持列表中选择默认
     // Get preview resolution
     // Here, select 5.7k for recording, and select default from the support list for others
     private PreviewStreamResolution getPreviewResolution(int previewType) {
-        // 自选分辨率（只要您觉着效果OK即可）
         // Optional resolution (as long as you feel the effect is OK)
         if (previewType == InstaCameraManager.PREVIEW_TYPE_RECORD) {
             return PreviewStreamResolution.STREAM_5760_2880_30FPS;
         }
 
-        // 或从当前相机的拍摄模式支持列表中任选其一
         // Or choose one of the supported shooting modes of the current camera
         return InstaCameraManager.getInstance().getSupportedPreviewStreamResolution(previewType).get(0);
     }
@@ -148,10 +177,8 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     public void onCameraStatusChanged(boolean enabled) {
         mLayoutLoading.setVisibility(View.GONE);
         mLayoutPlayer.setVisibility(enabled ? View.VISIBLE : View.GONE);
-        mLayoutPromptConnectCamera.setVisibility(enabled ? View.GONE : View.VISIBLE);
         resetState();
 
-        // 连接相机后自动开启预览、注册拍照监听
         // After connecting the camera, open preview stream and register listeners
         if (enabled) {
             InstaCameraManager.getInstance().setCaptureStatusListener(this);
@@ -164,7 +191,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     public void onCameraConnectError() {
         mLayoutLoading.setVisibility(View.GONE);
         mLayoutPlayer.setVisibility(View.GONE);
-        mLayoutPromptConnectCamera.setVisibility(View.VISIBLE);
     }
 
 
@@ -189,7 +215,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     public void onOpening() {
         mLayoutLoading.setVisibility(View.VISIBLE);
         mLayoutPlayer.setVisibility(View.VISIBLE);
-        mLayoutPromptConnectCamera.setVisibility(View.GONE);
     }
 
     @Override
@@ -212,7 +237,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mCapturePlayerView.play();
         mCapturePlayerView.setKeepScreenOn(true);
 
-        // 预览开启后再录像
         // Record after preview is opened
         if (mIsCaptureButtonClicked) {
             mIsCaptureButtonClicked = false;
@@ -250,7 +274,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
                 break;
             case InstaCameraManager.PREVIEW_TYPE_NORMAL:
                 mLayoutLoading.setVisibility(View.VISIBLE);
-                InstaCameraManager.getInstance().startNormalCapture(false);
+                InstaCameraManager.getInstance().startHDRCapture(false);
                 break;
             case InstaCameraManager.PREVIEW_TYPE_LIVE:
                 NetworkManager.getInstance().exchangeNetToMobile();
@@ -259,7 +283,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         }
     }
 
-    // 所有直播推流参数根据您的产品需求任意填写
     // All live streaming parameters are arbitrarily filled in according to your product requirements
     private LiveParamsBuilder createLiveParams() {
         return new LiveParamsBuilder()
@@ -269,7 +292,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
                 .setFps(30)
                 .setBitrate(2 * 1024 * 1024)
                 .setPanorama(true)
-                // 设置网络ID即可在使用WIFI连接相机时使用4G网络推流
                 // set NetId to use 4G to push live streaming when connecting camera by WIFI
                 .setNetId(NetworkManager.getInstance().getMobileNetId());
     }
@@ -295,14 +317,12 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     public void onCaptureFinish(String[] filePaths) {
         mLayoutLoading.setVisibility(View.GONE);
         checkToRestartCameraPreviewStream();
-        // 拍摄结束返回文件路径，可执行下载、播放、导出操作，任君选择
-        // 如果是HDR拍照则必须从相机下载到本地才可进行HDR合成操作
         // After capture, the file paths will be returned. Then download, play and export operations can be performed
         // If it is HDR Capture, you must download images from the camera to the local to perform HDR stitching operation
 //        PlayAndExportActivity.launchActivity(this, filePaths);
     }
 
-    
+
 
     @Override
     public void onLivePushStarted() {
@@ -324,7 +344,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     protected void onStop() {
         super.onStop();
         if (isFinishing()) {
-            // 退出页面时销毁预览
             // Destroy the preview when exiting the page
             InstaCameraManager.getInstance().stopLive();
             InstaCameraManager.getInstance().setPreviewStatusChangedListener(null);
