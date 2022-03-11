@@ -2,7 +2,6 @@ package com.example.insta360;
 
 import android.app.Application;
 
-import com.example.insta360.activity.StitchActivity;
 import com.arashivision.sdk.demo.util.AssetsUtil;
 import com.arashivision.sdkcamera.InstaCameraSDK;
 import com.arashivision.sdkmedia.InstaMediaSDK;
@@ -26,10 +25,10 @@ public class MyApp extends Application {
     }
 
     private void copyHdrSourceFromAssets() {
-        File dir = new File(StitchActivity.COPY_DIR);
-        if (!dir.exists()) {
-            AssetsUtil.copyFilesFromAssets(this, "hdr_source", dir.getAbsolutePath());
-        }
+//        File dir = new File(StitchActivity.COPY_DIR);
+//        if (!dir.exists()) {
+//            AssetsUtil.copyFilesFromAssets(this, "hdr_source", dir.getAbsolutePath());
+//        }
     }
 
     public static MyApp getInstance() {
