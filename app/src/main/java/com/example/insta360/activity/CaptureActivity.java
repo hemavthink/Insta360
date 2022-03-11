@@ -17,6 +17,9 @@ import com.arashivision.sdkcamera.camera.callback.ICaptureStatusListener;
 import com.arashivision.sdkcamera.camera.callback.ILiveStatusListener;
 import com.arashivision.sdkcamera.camera.callback.IPreviewStatusListener;
 import com.arashivision.sdkcamera.camera.resolution.PreviewStreamResolution;
+import com.arashivision.sdkmedia.player.capture.CaptureParamsBuilder;
+import com.arashivision.sdkmedia.player.capture.InstaCapturePlayerView;
+import com.arashivision.sdkmedia.player.listener.PlayerViewListener;
 import com.example.insta360.R;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -36,11 +39,16 @@ public class CaptureActivity extends BaseObserveCameraActivity implements ICaptu
     private TextView mTvCaptureCount;
     private Button mBtnPlayCameraFile;
     private Button mBtnPlayLocalFile;
+    private InstaCapturePlayerView mCapturePlayerView;
+    private int mCurPreviewType = -1;
+    private PreviewStreamResolution mCurPreviewResolution = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_capture);
+        mCapturePlayerView = findViewById(R.id.player_capture);
+        mCapturePlayerView.setLifecycle(getLifecycle());
         setTitle(R.string.capture_toolbar_title);
         // Capture Status Callback
         InstaCameraManager.getInstance().setCaptureStatusListener(this);
@@ -48,29 +56,73 @@ public class CaptureActivity extends BaseObserveCameraActivity implements ICaptu
         checkToRestartCameraPreviewStream();
         bindViews();
 
-
-
         findViewById(R.id.btn_normal_capture).setOnClickListener(v -> {
             if (checkSdCardEnabled()) {
                 InstaCameraManager.getInstance().startNormalCapture(false);
             }
         });
 
+    }
 
-
+    private boolean isCameraConnected() {
+        return InstaCameraManager.getInstance().getCameraConnectedType() != InstaCameraManager.CONNECT_TYPE_NONE;
     }
 
     private boolean checkToRestartCameraPreviewStream() {
-        int newPreviewType = getNewPreviewType();
-        PreviewStreamResolution newResolution = getPreviewResolution(newPreviewType);
-        InstaCameraManager.getInstance().closePreviewStream();
-        InstaCameraManager.getInstance().startPreviewStream(newResolution, newPreviewType);
-        return true;
+        if (isCameraConnected()) {
+            int newPreviewType = getNewPreviewType();
+            PreviewStreamResolution newResolution = getPreviewResolution(newPreviewType);
+            if (mCurPreviewType != newPreviewType || mCurPreviewResolution != newResolution) {
+                mCurPreviewType = newPreviewType;
+                mCurPreviewResolution = newResolution;
+                InstaCameraManager.getInstance().closePreviewStream();
+                InstaCameraManager.getInstance().startPreviewStream(newResolution, newPreviewType);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    @Override
+    public void onOpened() {
+        InstaCameraManager.getInstance().setStreamEncode();
+        mCapturePlayerView.setPlayerViewListener(new PlayerViewListener() {
+            @Override
+            public void onLoadingFinish() {
+                InstaCameraManager.getInstance().setPipeline(mCapturePlayerView.getPipeline());
+            }
+
+            @Override
+            public void onReleaseCameraPipeline() {
+                InstaCameraManager.getInstance().setPipeline(null);
+            }
+        });
+        mCapturePlayerView.prepare(createCaptureParams());
+        mCapturePlayerView.play();
+        mCapturePlayerView.setKeepScreenOn(true);
+
+        // 预览开启后再录像
+        // Record after preview is opened
+//        if (mIsCaptureButtonClicked) {
+//            mIsCaptureButtonClicked = false;
+//            doCameraWork();
+//        }
+    }
+
+
+    private CaptureParamsBuilder createCaptureParams() {
+        return new CaptureParamsBuilder()
+                .setCameraType(InstaCameraManager.getInstance().getCameraType())
+                .setMediaOffset(InstaCameraManager.getInstance().getMediaOffset())
+                .setCameraSelfie(InstaCameraManager.getInstance().isCameraSelfie())
+                .setLive(mCurPreviewType == InstaCameraManager.PREVIEW_TYPE_LIVE)  // 是否为直播模式
+                .setResolutionParams(mCurPreviewResolution.width, mCurPreviewResolution.height, mCurPreviewResolution.fps);
     }
 
     // Get the preview mode currently to be turned on
     private int getNewPreviewType() {
-        return InstaCameraManager.PREVIEW_TYPE_LIVE;
+        return InstaCameraManager.PREVIEW_TYPE_NORMAL;
     }
 
     // Here, select 5.7k for recording, and select default from the support list for others
