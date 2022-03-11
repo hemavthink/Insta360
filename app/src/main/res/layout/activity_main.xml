@@ -3,53 +3,305 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
-    <RelativeLayout
+    android:layout_height="match_parent">
+
+    <com.arashivision.sdkmedia.player.capture.InstaCapturePlayerView
+        android:id="@+id/player_capture"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal">
+        android:background="@android:color/black" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center">
+    <TextView
+        android:id="@+id/tv_sd_card_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="SD卡：剩余2.1G" />
 
-            <LinearLayout
-                android:id="@+id/header_bar"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:background="@drawable/shadow"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                tools:ignore="MissingConstraints">
+    <TextView
+        android:id="@+id/tv_battery_level"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@android:color/black"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_sd_card_state"
+        app:layout_constraintTop_toBottomOf="@+id/tv_sd_card_state"
+        tools:text="电量：90%" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:text="Connect to your 360 Camera"
-                    android:textAlignment="center"></TextView>
+    <LinearLayout
+        android:id="@+id/layout_exposure_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@+id/tv_sd_card_state"
+        app:layout_constraintTop_toBottomOf="@+id/tv_battery_level">
 
-                <Button
-                    android:id="@+id/btn_connect_by_wifi"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:backgroundTint="@color/themeColor"
-                    android:text="Connect to wifi"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Exposure Data:"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/tv_exposure_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
 
-            </LinearLayout>
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/tv_exposure_exposureTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
 
-    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/layout_gyro_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@+id/tv_sd_card_state"
+        app:layout_constraintTop_toBottomOf="@+id/layout_exposure_data">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Gyro Data:"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
 
+        <TextView
+            android:id="@+id/tv_gyro_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/tv_gyro_ax"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
 
+        <TextView
+            android:id="@+id/tv_gyro_ay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_gyro_az"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_gyro_gx"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_gyro_gy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_gyro_gz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_video_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="@+id/tv_sd_card_state"
+        app:layout_constraintTop_toBottomOf="@+id/layout_gyro_data">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Video Data:"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_video_data_timestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tv_video_data_size"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_record_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/rg_capture_mode"
+        app:layout_constraintEnd_toEndOf="@+id/player_capture"
+        app:layout_constraintStart_toStartOf="@+id/player_capture"
+        tools:text="00:00" />
+
+    <RadioGroup
+        android:id="@+id/rg_capture_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/btn_camera_work"
+        app:layout_constraintEnd_toEndOf="@+id/player_capture"
+        app:layout_constraintStart_toStartOf="@+id/player_capture">
+
+        <RadioButton
+            android:id="@+id/rb_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/full_demo_record"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rb_capture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/full_demo_capture"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/rb_live"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="@string/full_demo_live"
+            android:textSize="18sp" />
+    </RadioGroup>
+
+    <ToggleButton
+        android:id="@+id/btn_camera_work"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textAllCaps="false"
+        android:textOff="@string/full_demo_start"
+        android:textOn="@string/full_demo_stop"
+        app:layout_constraintBottom_toBottomOf="@+id/player_capture"
+        app:layout_constraintEnd_toEndOf="@+id/player_capture"
+        app:layout_constraintStart_toStartOf="@+id/player_capture" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_player"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="player_capture, tv_sd_card_state, tv_battery_level,
+        tv_record_duration, rg_capture_mode, btn_camera_work, layout_exposure_data,
+        layout_gyro_data, layout_video_data" />
+
+    <TextView
+        android:id="@+id/tv_prompt_connect_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/full_demo_prompt_connect_camera"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_connect_by_wifi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <Button
+        android:id="@+id/btn_connect_by_wifi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="26dp"
+        android:text="@string/full_demo_connect_by_wifi"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btn_connect_by_usb"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_prompt_connect_camera" />
+
+    <Button
+        android:id="@+id/btn_connect_by_usb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/full_demo_connect_by_usb"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_connect_by_wifi"
+        app:layout_constraintTop_toTopOf="@+id/btn_connect_by_wifi" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_prompt_connect_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="tv_prompt_connect_camera, btn_connect_by_wifi, btn_connect_by_usb" />
+
+    <FrameLayout
+        android:id="@+id/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:translationZ="5dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
