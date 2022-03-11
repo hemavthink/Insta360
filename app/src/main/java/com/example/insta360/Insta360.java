@@ -41,23 +41,9 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     private Group mLayoutPromptConnectCamera;
     private Group mLayoutPlayer;
     private InstaCapturePlayerView mCapturePlayerView;
-    private TextView mTvSdCard;
-    private TextView mTvSdBattery;
-    private TextView mTvRecordDuration;
-    private RadioGroup mRgCaptureMode;
+
     private ImageView mBtnCameraWork;
 
-    private TextView mTvExposureTimestamp;
-    private TextView mTvExposureTime;
-    private TextView mTvGyroTimestamp;
-    private TextView mTvGyroAX;
-    private TextView mTvGyroAY;
-    private TextView mTvGyroAZ;
-    private TextView mTvGyroGX;
-    private TextView mTvGyroGY;
-    private TextView mTvGyroGZ;
-    private TextView mTvVideoTimestamp;
-    private TextView mTvVideoSize;
 
     private boolean mNeedToRestartPreview;
     private boolean mIsCaptureButtonClicked;
@@ -114,7 +100,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     }
 
     private void resetState() {
-        mTvRecordDuration.setText(null);
         mIsCaptureButtonClicked = false;
         mCurPreviewType = -1;
         mCurPreviewResolution = null;
@@ -182,28 +167,8 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mLayoutPromptConnectCamera.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public void onCameraBatteryUpdate(int batteryLevel, boolean isCharging) {
-        String text = getString(R.string.full_demo_battery_level, batteryLevel);
-        if (isCharging) {
-            text += "  " + getString(R.string.full_demo_charging);
-        }
-        mTvSdBattery.setText(text);
-    }
 
-    @Override
-    public void onCameraSDCardStateChanged(boolean enabled) {
-        if (!enabled) {
-            mTvSdCard.setText(R.string.full_demo_sd_error);
-        }
-    }
 
-    @Override
-    public void onCameraStorageChanged(long freeSpace, long totalSpace) {
-        if (!(freeSpace <= 0 && totalSpace <= 0)) {
-            mTvSdCard.setText(getString(R.string.full_demo_sd_remaining_space, FileUtils.computeFileSize(freeSpace) + "/" + FileUtils.computeFileSize(totalSpace)));
-        }
-    }
 
     private boolean checkToRestartCameraPreviewStream() {
         if (isCameraConnected()) {
@@ -270,31 +235,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mCapturePlayerView.setKeepScreenOn(false);
     }
 
-    @Override
-    public void onExposureData(ExposureData exposureData) {
-        mTvExposureTimestamp.setText("timestamp: " + exposureData.timestamp);
-        mTvExposureTime.setText("exposure_time: " + exposureData.exposureTime);
-    }
 
-    @Override
-    public void onGyroData(List<GyroData> gyroList) {
-        if (!gyroList.isEmpty()) {
-            GyroData gyroData = gyroList.get(gyroList.size() - 1);
-            mTvGyroTimestamp.setText("timestamp: " + gyroData.timestamp);
-            mTvGyroAX.setText("ax: " + gyroData.ax);
-            mTvGyroAY.setText("ay: " + gyroData.ay);
-            mTvGyroAZ.setText("az: " + gyroData.az);
-            mTvGyroGX.setText("gx: " + gyroData.gx);
-            mTvGyroGY.setText("gy: " + gyroData.gy);
-            mTvGyroGZ.setText("gz: " + gyroData.gz);
-        }
-    }
-
-    @Override
-    public void onVideoData(VideoData videoData) {
-        mTvVideoTimestamp.setText("timestamp: " + videoData.timestamp);
-        mTvVideoSize.setText("data size: " + videoData.size);
-    }
 
     private void doCameraWork() {
         if (mCurPreviewType != InstaCameraManager.PREVIEW_TYPE_LIVE && !InstaCameraManager.getInstance().isSdCardEnabled()) {
@@ -353,8 +294,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     @Override
     public void onCaptureFinish(String[] filePaths) {
         mLayoutLoading.setVisibility(View.GONE);
-        mTvRecordDuration.setText(null);
-//        mBtnCameraWork.setChecked(false);
         checkToRestartCameraPreviewStream();
         // 拍摄结束返回文件路径，可执行下载、播放、导出操作，任君选择
         // 如果是HDR拍照则必须从相机下载到本地才可进行HDR合成操作
@@ -363,10 +302,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
 //        PlayAndExportActivity.launchActivity(this, filePaths);
     }
 
-    @Override
-    public void onCaptureTimeChanged(long captureTime) {
-        mTvRecordDuration.setText(TimeFormat.durationFormat(captureTime));
-    }
+    
 
     @Override
     public void onLivePushStarted() {
