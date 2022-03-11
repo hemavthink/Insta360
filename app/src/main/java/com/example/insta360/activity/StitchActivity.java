@@ -22,7 +22,7 @@ import java.lang.ref.WeakReference;
 
 public class StitchActivity extends AppCompatActivity {
     private static final String WORK_URLS = "CAMERA_FILE_PATH";
-
+    public static final String COPY_DIR = MyApp.getInstance().getCacheDir() + "/hdr_source";
     private WorkWrapper mWorkWrapper;
     private String mOutputPath = MyApp.getInstance().getFilesDir() + "/hdr_generate/generate.jpg";
     private StitchTask mStitchTask;
