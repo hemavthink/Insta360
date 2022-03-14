@@ -5,6 +5,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.Group;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.net.NetworkRequest;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +89,49 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
             onCameraStorageChanged(cameraManager.getCameraStorageFreeSpace(), cameraManager.getCameraStorageTotalSpace());
         }
         cameraManager.registerCameraChangedCallback(this);
+        forceConnectToWifi();
+    }
+
+    /**
+     * Force this applicatioin to connect to Wi-Fi
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void forceConnectToWifi() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if ((info != null) && info.isAvailable()) {
+                NetworkRequest.Builder builder = new NetworkRequest.Builder();
+                builder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+                NetworkRequest requestedNetwork = builder.build();
+
+                ConnectivityManager.NetworkCallback callback = new ConnectivityManager.NetworkCallback() {
+                    @Override
+                    public void onAvailable(Network network) {
+                        super.onAvailable(network);
+
+                        ConnectivityManager.setProcessDefaultNetwork(network);
+                        mConnectionSwitchEnabled = true;
+                        setToggleChange();
+
+                    }
+
+                    @Override
+                    public void onLost(Network network) {
+                        super.onLost(network);
+
+                        mConnectionSwitchEnabled = false;
+                        setToggleChange();
+                    }
+                };
+
+                cm.registerNetworkCallback(requestedNetwork, callback);
+            }
+        } else {
+            mConnectionSwitchEnabled = true;
+            setToggleChange();
+        }
     }
 
     private void setToggleListener() {

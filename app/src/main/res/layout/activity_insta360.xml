@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:id="@+id/text_camera_status"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -82,7 +82,9 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
+                android:shadowColor="@color/themeColor"
                 android:background="@drawable/ic_camera_shutter"
+                android:backgroundTint="@color/themeColor"
                 android:gravity="center_vertical" />
 
         </LinearLayout>
