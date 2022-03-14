@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Insta360PreviewActivity">
+
+    <com.arashivision.sdkmedia.player.image.InstaImagePlayerView
+        android:id="@+id/player_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <com.arashivision.sdkmedia.player.video.InstaVideoPlayerView
+        android:id="@+id/player_video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tv_current"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/seek_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/seek_bar" />
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="20dp"
+        android:backgroundTint="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/player_video"
+        app:layout_constraintEnd_toStartOf="@+id/tv_total"
+        app:layout_constraintStart_toEndOf="@+id/tv_current" />
+
+    <TextView
+        android:id="@+id/tv_total"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/seek_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/seek_bar" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="tv_current,tv_total,seek_bar" />
+
+    <Button
+        android:id="@+id/btn_export_original"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:alpha="0.8"
+        android:text="@string/play_export_original"
+        android:textAllCaps="false"
+        app:layout_constraintEnd_toStartOf="@+id/btn_export_thumbnail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btn_export_thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.8"
+        android:text="@string/play_export_thumbnail"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_export_original"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_export_original"
+        app:layout_constraintTop_toTopOf="@+id/btn_export_original" />
+
+    <RadioGroup
+        android:id="@+id/rg_image_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_export_original">
+
+        <RadioButton
+            android:id="@+id/rb_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/preview_mode_normal" />
+
+        <RadioButton
+            android:id="@+id/rb_fisheye"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/preview_mode_fisheye" />
+
+        <RadioButton
+            android:id="@+id/rb_perspective"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/preview_mode_perspective" />
+
+        <RadioButton
+            android:id="@+id/rb_plane"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/preview_mode_plane" />
+    </RadioGroup>
+
+<!--    <ToggleButton-->
+<!--        android:id="@+id/btn_hdr_stitch"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginBottom="16dp"-->
+<!--        android:alpha="0.8"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:textOff="@string/play_hdr_stitch"-->
+<!--        android:textOn="@string/play_original"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent" />-->
+
+    <LinearLayout
+        android:id="@+id/resultSelection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="16dp"
+        android:orientation="horizontal"
+        tools:ignore="MissingConstraints"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageButton
+            android:id="@+id/photoSave"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:alpha="0.6"
+            android:background="@drawable/round_button"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_done_white_24dp" />
+
+        <ImageButton
+            android:id="@+id/photoDiscard"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:alpha="0.6"
+            android:background="@drawable/round_button"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_delete_white_24dp" />
+
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

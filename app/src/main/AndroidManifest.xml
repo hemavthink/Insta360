@@ -11,14 +11,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Insta360"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.google.android.actions"
+            android:resource="@xml/round_button" />
+
+        <activity
+            android:name=".Insta360PreviewActivity"
+            android:exported="false" />
         <activity
             android:name=".Insta360"
             android:exported="false" />
-
-        <meta-data
-            android:name="com.google.android.actions"
-            android:resource="@drawable/shadow" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
