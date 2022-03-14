@@ -170,7 +170,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mCapturePlayerView = findViewById(R.id.player_capture);
         mCapturePlayerView.setLifecycle(getLifecycle());
 
-
         mBtnCameraWork = findViewById(R.id.btn_camera_work);
         mBtnCameraWork.setOnClickListener(v -> {
             mIsCaptureButtonClicked = true;
@@ -188,18 +187,11 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mIsCaptureButtonClicked = false;
         mCurPreviewType = -1;
         mCurPreviewResolution = null;
-
-//        mNeedToRestartPreview = false;
-//        int captureType = InstaCameraManager.getInstance().getCurrentCaptureType();
-//        if (captureType == InstaCameraManager.CAPTURE_TYPE_NORMAL_RECORD) {
-//            mRgCaptureMode.check(R.id.rb_record);
-//            mBtnCameraWork.setChecked(true);
-//        } else if (captureType == InstaCameraManager.CAPTURE_TYPE_NORMAL_CAPTURE) {
-//            mRgCaptureMode.check(R.id.rb_capture);
-//            mLayoutLoading.setVisibility(View.VISIBLE);
-//            mBtnCameraWork.setChecked(true);
-//        }
         mNeedToRestartPreview = true;
+        if (mNeedToRestartPreview) {
+            checkToRestartCameraPreviewStream();
+        }
+        mNeedToRestartPreview = false;
     }
 
     // Get the preview mode currently to be turned on

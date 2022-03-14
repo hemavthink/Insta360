@@ -36,7 +36,8 @@
             android:id="@+id/player_capture"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2"  />
+            android:layout_weight="2"
+            android:background="@android:color/black"/>
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/group_player"
