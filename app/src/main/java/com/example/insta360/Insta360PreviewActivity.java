@@ -108,6 +108,15 @@ public class Insta360PreviewActivity  extends BaseObserveCameraActivity implemen
                 mBtnHDR.setChecked(false);
             }
         });
+        findViewById(R.id.photoDiscard).setOnClickListener(v -> {
+           finish();
+        });
+
+        findViewById(R.id.photoSave).setOnClickListener(v -> {
+            exportImageOriginal();
+            exportImageThumbnail();
+            showExportDialog();
+        });
 
         // 导出全景
         // Export Panorama
