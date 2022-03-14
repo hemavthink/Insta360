@@ -356,7 +356,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         checkToRestartCameraPreviewStream();
         // After capture, the file paths will be returned. Then download, play and export operations can be performed
         // If it is HDR Capture, you must download images from the camera to the local to perform HDR stitching operation
-//        PlayAndExportActivity.launchActivity(this, filePaths);
+        Insta360PreviewActivity.launchActivity(this, filePaths);
     }
 
 
