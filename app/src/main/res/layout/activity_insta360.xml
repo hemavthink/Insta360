@@ -46,21 +46,7 @@
             android:visibility="visible"
             app:constraint_referenced_ids="player_capture" />
 
-        <FrameLayout
-            android:id="@+id/layout_loading"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#CC000000"
-            android:clickable="true"
-            android:focusable="true"
-            android:translationZ="5dp"
-            android:visibility="gone">
 
-            <ProgressBar
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_gravity="center" />
-        </FrameLayout>
 
 
         <LinearLayout
@@ -91,6 +77,22 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:translationZ="5dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

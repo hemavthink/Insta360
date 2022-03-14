@@ -58,7 +58,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     private Button mBtnCameraWork;
     ToggleButton connectionSwitch;
 
-    private boolean mNeedToRestartPreview;
     private boolean mIsCaptureButtonClicked;
     private int mCurPreviewType = -1;
     private PreviewStreamResolution mCurPreviewResolution = null;
@@ -78,7 +77,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         layoutCameraArea = (LinearLayout) findViewById(R.id.shoot_area);
-
+        mLayoutLoading = findViewById(R.id.layout_loading);
         connectionSwitch = toolbar.findViewById(R.id.connection_switch);
         setToggleListener();
         InstaCameraManager cameraManager = InstaCameraManager.getInstance();
@@ -138,7 +137,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         connectionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mLayoutLoading = findViewById(R.id.layout_loading);
                 if (isChecked) {
                     layoutCameraArea.setVisibility(View.VISIBLE);
                     openCamera(InstaCameraManager.CONNECT_TYPE_WIFI);
@@ -187,11 +185,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mIsCaptureButtonClicked = false;
         mCurPreviewType = -1;
         mCurPreviewResolution = null;
-        mNeedToRestartPreview = true;
-        if (mNeedToRestartPreview) {
-            checkToRestartCameraPreviewStream();
-        }
-        mNeedToRestartPreview = false;
+        checkToRestartCameraPreviewStream();
     }
 
     // Get the preview mode currently to be turned on
