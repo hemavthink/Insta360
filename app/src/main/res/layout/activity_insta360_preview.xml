@@ -120,18 +120,19 @@
             android:text="@string/preview_mode_plane" />
     </RadioGroup>
 
-<!--    <ToggleButton-->
-<!--        android:id="@+id/btn_hdr_stitch"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        android:alpha="0.8"-->
-<!--        android:textAllCaps="false"-->
-<!--        android:textOff="@string/play_hdr_stitch"-->
-<!--        android:textOn="@string/play_original"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
+    <ToggleButton
+        android:id="@+id/btn_hdr_stitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:alpha="0.8"
+        android:textAllCaps="false"
+        android:textOff="@string/play_hdr_stitch"
+        android:textOn="@string/play_original"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/resultSelection"
