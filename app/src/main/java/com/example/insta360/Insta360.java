@@ -312,6 +312,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
             case InstaCameraManager.PREVIEW_TYPE_NORMAL:
                 mLayoutLoading.setVisibility(View.VISIBLE);
                 int funcMode = InstaCameraManager.FUNCTION_MODE_HDR_CAPTURE;
+                int type = InstaCameraManager.getInstance().getCurrentCaptureType();
                 InstaCameraManager.getInstance().setAEBCaptureNum(funcMode, 3);
                 InstaCameraManager.getInstance().setExposureEV(funcMode, 2f);
                 InstaCameraManager.getInstance().startHDRCapture(false);
@@ -359,7 +360,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         checkToRestartCameraPreviewStream();
         // After capture, the file paths will be returned. Then download, play and export operations can be performed
         // If it is HDR Capture, you must download images from the camera to the local to perform HDR stitching operation
-        Insta360PreviewActivity.launchActivity(this, filePaths);
+        Insta360ImageViewer.launchActivity(this, filePaths);
     }
 
 

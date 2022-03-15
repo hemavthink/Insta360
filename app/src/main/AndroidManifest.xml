@@ -11,7 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Insta360"
         android:usesCleartextTraffic="true">
-
+        <activity
+            android:name=".Insta360ImageViewer"
+            android:exported="false" />
         <activity
             android:name=".Insta360PreviewActivity"
             android:exported="false" />
