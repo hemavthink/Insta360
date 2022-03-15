@@ -311,6 +311,9 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
                 break;
             case InstaCameraManager.PREVIEW_TYPE_NORMAL:
                 mLayoutLoading.setVisibility(View.VISIBLE);
+                int funcMode = InstaCameraManager.FUNCTION_MODE_HDR_CAPTURE;
+                InstaCameraManager.getInstance().setAEBCaptureNum(funcMode, 3);
+                InstaCameraManager.getInstance().setExposureEV(funcMode, 2f);
                 InstaCameraManager.getInstance().startHDRCapture(false);
                 break;
             case InstaCameraManager.PREVIEW_TYPE_LIVE:

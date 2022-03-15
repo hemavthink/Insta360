@@ -65,7 +65,7 @@
         android:alpha="0.8"
         android:text="@string/play_export_original"
         android:textAllCaps="false"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/btn_export_thumbnail"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -75,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:alpha="0.8"
-        android:visibility="invisible"
+        android:visibility="gone"
         android:text="@string/play_export_thumbnail"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@+id/btn_export_original"
@@ -91,7 +91,7 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/btn_export_original">
 
         <RadioButton
@@ -132,7 +132,7 @@
         android:textAllCaps="false"
         android:textOff="@string/play_hdr_stitch"
         android:textOn="@string/play_original"
-        android:visibility="invisible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

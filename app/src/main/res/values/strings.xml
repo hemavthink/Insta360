@@ -211,7 +211,7 @@
     <string name="stitch_hdr">HDR Stitching Effect</string>
 
     <!-- Play And Export Activity -->
-    <string name="play_toolbar_title">Play &amp; Export</string>
+    <string name="play_toolbar_title">Camera &amp; Preview</string>
     <string name="play_export_original">Export\nPanorama</string>
     <string name="play_export_thumbnail">Export\nThumbnail</string>
     <string name="play_hdr_stitch">HDR Stitch</string>

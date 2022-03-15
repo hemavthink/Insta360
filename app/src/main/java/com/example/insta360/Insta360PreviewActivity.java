@@ -88,33 +88,32 @@ public class Insta360PreviewActivity  extends BaseObserveCameraActivity implemen
         if (mWorkWrapper.isVideo()) {
             playVideo(false);
         } else {
-            playImage(false);
+           // playImage(false);
         }
 
         // HDR stitch
         mBtnHDR = findViewById(R.id.btn_hdr_stitch);
-        mBtnHDR.setVisibility(mWorkWrapper.isHDRPhoto() ? View.VISIBLE : View.GONE);
-        mBtnHDR.setOnClickListener(v -> {
-            if (mWorkWrapper.isHDRPhoto()) {
-                if (mBtnHDR.isChecked()) {
-                    mStitchTask = new StitchTask(this);
-                    mStitchTask.execute();
-                } else {
-                    mIsStitchHDRSuccessful = false;
-                    playImage(mRbPlane.isChecked());
-                }
+        mBtnHDR.setVisibility(mWorkWrapper.isHDRPhoto() ? View.GONE : View.GONE);
+        mBtnHDR.setChecked(mWorkWrapper.isHDRPhoto() ? true : false);
+        if (mWorkWrapper.isHDRPhoto()) {
+            if (mBtnHDR.isChecked()) {
+                mStitchTask = new StitchTask(this);
+                mStitchTask.execute();
             } else {
-                Toast.makeText(this, R.string.play_toast_not_hdr, Toast.LENGTH_SHORT).show();
-                mBtnHDR.setChecked(false);
+                mIsStitchHDRSuccessful = false;
+                playImage(mRbPlane.isChecked());
             }
-        });
+        } else {
+            Toast.makeText(this, R.string.play_toast_not_hdr, Toast.LENGTH_SHORT).show();
+            mBtnHDR.setChecked(false);
+        }
         findViewById(R.id.photoDiscard).setOnClickListener(v -> {
            finish();
         });
 
         findViewById(R.id.photoSave).setOnClickListener(v -> {
             exportImageOriginal();
-            exportImageThumbnail();
+         //   exportImageThumbnail();
             showExportDialog();
         });
 
