@@ -11,9 +11,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Insta360"
         android:usesCleartextTraffic="true">
-        <meta-data
-            android:name="com.google.android.actions"
-            android:resource="@xml/round_button" />
 
         <activity
             android:name=".Insta360PreviewActivity"
