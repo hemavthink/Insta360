@@ -12,13 +12,10 @@
         android:theme="@style/Theme.Insta360"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".Insta360ImageViewer"
+            android:name=".Insta360ImagePreviewActivity"
             android:exported="false" />
         <activity
-            android:name=".Insta360PreviewActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Insta360"
+            android:name=".Insta360CameraPreviewActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

@@ -51,34 +51,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Insta360 extends AppCompatActivity implements ICameraChangedCallback,
+public class Insta360CameraPreviewActivity extends AppCompatActivity implements ICameraChangedCallback,
         IPreviewStatusListener, ICaptureStatusListener {
 
     private ViewGroup mLayoutLoading;
-    private Group mLayoutPlayer;
+
     private InstaCapturePlayerView mCapturePlayerView;
-
     private Button mBtnCameraWork;
-    ToggleButton connectionSwitch;
+    private ToggleButton connectionSwitch;
 
-    private boolean mIsCaptureButtonClicked;
-    private int mCurPreviewType = -1;
-    private PreviewStreamResolution mCurPreviewResolution = null;
     private Toolbar toolbar;
-    private LinearLayout layoutCameraArea;
     private boolean mConnectionSwitchEnabled = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_insta360);
+        setContentView(R.layout.activity_insta360_camera_preview);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         toolbar = (Toolbar) findViewById(R.id.tbHeader);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        layoutCameraArea = (LinearLayout) findViewById(R.id.shoot_area);
         mLayoutLoading = findViewById(R.id.layout_loading);
         connectionSwitch = toolbar.findViewById(R.id.connection_switch);
         mCapturePlayerView = findViewById(R.id.player_capture);
@@ -150,10 +144,9 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    layoutCameraArea.setVisibility(View.VISIBLE);
                     openCamera(InstaCameraManager.CONNECT_TYPE_WIFI);
                 } else {
-                    layoutCameraArea.setVisibility(View.GONE);
+                   // Need toc check
                 }
             }
         });
@@ -183,11 +176,8 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     @Override
     public void onCameraStatusChanged(boolean enabled) {
         mLayoutLoading.setVisibility(View.GONE);
-       // mLayoutPlayer.setVisibility(enabled ? View.VISIBLE : View.GONE);
-
-        // After connecting the camera, open preview stream and register listeners
         if (enabled) {
-            List<PreviewStreamResolution> supportedList = InstaCameraManager.getInstance().getSupportedPreviewStreamResolution(InstaCameraManager.PREVIEW_TYPE_NORMAL);
+           // List<PreviewStreamResolution> supportedList = InstaCameraManager.getInstance().getSupportedPreviewStreamResolution(InstaCameraManager.PREVIEW_TYPE_NORMAL);
             InstaCameraManager.getInstance().setPreviewStatusChangedListener(this);
             InstaCameraManager.getInstance().startPreviewStream(PreviewStreamResolution.STREAM_1440_720_30FPS, InstaCameraManager.PREVIEW_TYPE_NORMAL);
         }
@@ -196,15 +186,14 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     @Override
     public void onCameraConnectError() {
         mLayoutLoading.setVisibility(View.GONE);
-      //  mLayoutPlayer.setVisibility(View.GONE);
+        //  mLayoutPlayer.setVisibility(View.GONE);
     }
 
 
-   /* Preview stream */
+    /* Preview stream */
     @Override
     public void onOpening() {
         mLayoutLoading.setVisibility(View.VISIBLE);
-       // mLayoutPlayer.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -254,10 +243,20 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
                 .setCameraType(InstaCameraManager.getInstance().getCameraType())
                 .setMediaOffset(InstaCameraManager.getInstance().getMediaOffset())
                 .setCameraSelfie(InstaCameraManager.getInstance().isCameraSelfie())
-                 .setLive(false);
+                .setLive(false);
     }
 
-   /* Capture delegate or sdk methods */
+    /* Capture delegate or sdk methods */
+    @Override
+    public void onCaptureStarting() {
+        mLayoutLoading.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onCaptureWorking() {
+        mLayoutLoading.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void onCaptureStopping() {
         mLayoutLoading.setVisibility(View.VISIBLE);
@@ -265,71 +264,21 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
 
     @Override
     public void onCaptureFinish(String[] filePaths) {
-
-        // After capture, the file paths will be returned. Then download, play and export operations can be performed
-        // If it is HDR Capture, you must download images from the camera to the local to perform HDR stitching operation
-        downloadFilesAndPlay(filePaths);
+        Insta360ImagePreviewActivity.launchActivity(this, filePaths);
     }
 
-    private void downloadFilesAndPlay(String[] urls) {
-        if (urls == null || urls.length == 0) {
-            return;
-        }
+    @Override
+    public void onCaptureCountChanged(int captureCount) {
+        // Interval shots
+        // Only Interval Capture type will callback this
+        mLayoutLoading.setVisibility(View.VISIBLE);
+    }
 
-        String localFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/SDK_DEMO_CAPTURE";
-        String[] fileNames = new String[urls.length];
-        String[] localPaths = new String[urls.length];
-        boolean needDownload = false;
-        for (int i = 0; i < localPaths.length; i++) {
-            fileNames[i] = urls[i].substring(urls[i].lastIndexOf("/") + 1);
-            localPaths[i] = localFolder + "/" + fileNames[i];
-            if (!new File(localPaths[i]).exists()) {
-                needDownload = true;
-            }
-        }
-
-        if (!needDownload) {
-            finish();
-            return;
-        }
-
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title(R.string.osc_dialog_title_downloading)
-                .content(getString(R.string.osc_dialog_msg_downloading, urls.length, 0, 0))
-                .cancelable(false)
-                .canceledOnTouchOutside(false)
-                .show();
-
-        AtomicInteger successfulCount = new AtomicInteger(0);
-        AtomicInteger errorCount = new AtomicInteger(0);
-        for (int i = 0; i < localPaths.length; i++) {
-            String url = urls[i];
-            OkGo.<File>get(url)
-                    .execute(new FileCallback(localFolder, fileNames[i]) {
-
-                        @Override
-                        public void onError(Response<File> response) {
-                            super.onError(response);
-                            errorCount.incrementAndGet();
-                            checkDownloadCount();
-                        }
-
-                        @Override
-                        public void onSuccess(Response<File> response) {
-                            successfulCount.incrementAndGet();
-                            checkDownloadCount();
-                        }
-
-                        private void checkDownloadCount() {
-                            dialog.setContent(getString(R.string.osc_dialog_msg_downloading, urls.length, successfulCount.intValue(), errorCount.intValue()));
-                            if (successfulCount.intValue() + errorCount.intValue() >= urls.length) {
-                                mLayoutLoading.setVisibility(View.GONE);
-                                Insta360ImageViewer.launchActivity(Insta360.this, localPaths);
-                                dialog.dismiss();
-                            }
-                        }
-                    });
-        }
+    @Override
+    public void onCaptureTimeChanged(long captureTime) {
+        // Record Duration, in ms
+        // Only Record type will callback this
+        mLayoutLoading.setVisibility(View.VISIBLE);
     }
 
     @Override

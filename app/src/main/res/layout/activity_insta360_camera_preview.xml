@@ -30,24 +30,12 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-
-
         <com.arashivision.sdkmedia.player.capture.InstaCapturePlayerView
             android:id="@+id/player_capture"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
             android:background="@android:color/black"/>
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_player"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            app:constraint_referenced_ids="player_capture" />
-
-
-
 
         <LinearLayout
             android:id="@+id/shoot_area"
@@ -56,12 +44,6 @@
             android:layout_gravity="center_horizontal"
             android:orientation="vertical"
             android:visibility="visible">
-
-            <TextView
-                android:id="@+id/storage_info"
-                android:layout_width="match_parent"
-                android:layout_height="20dp" />
-
 
             <Button
                 android:id="@+id/btn_camera_work"
@@ -95,4 +77,3 @@
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

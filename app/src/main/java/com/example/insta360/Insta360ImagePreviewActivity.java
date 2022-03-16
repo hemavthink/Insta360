@@ -26,7 +26,7 @@ import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Insta360ImageViewer extends BaseObserveCameraActivity {
+public class Insta360ImagePreviewActivity extends BaseObserveCameraActivity {
     InstaImagePlayerView mImagePlayerView;
     private static final String WORK_URLS = "CAMERA_FILE_PATH";
     String mHDROutputPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/SDK_DEMO_OSC/generate_hdr_" + System.currentTimeMillis() + ".jpg";
@@ -35,7 +35,7 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
     boolean mIsStitchHDRSuccessful;
 
     public static void launchActivity(Context context, String[] urls) {
-        Intent intent = new Intent(context, Insta360ImageViewer.class);
+        Intent intent = new Intent(context, Insta360ImagePreviewActivity.class);
         intent.putExtra(WORK_URLS, urls);
         context.startActivity(intent);
     }
@@ -43,7 +43,7 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_insta360_image_viewer);
+        setContentView(R.layout.activity_insta360_image_preview);
 
         String[] urls = getIntent().getStringArrayExtra(WORK_URLS);
         if (urls == null) {
@@ -53,29 +53,36 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
         }
         mImagePlayerView = findViewById(R.id.player_image);
         mWorkWrapper = new WorkWrapper(urls);
-        if(mWorkWrapper.isHDRPhoto()){
-            mStitchTask = new StitchTask(this);
-            mStitchTask.execute();
-        }else{
-            mImagePlayerView.prepare(mWorkWrapper, new ImageParamsBuilder());
-            mImagePlayerView.play();
-        }
+        mImagePlayerView.prepare(mWorkWrapper, new ImageParamsBuilder());
+        mImagePlayerView.play();
+
+        findViewById(R.id.photoDiscard).setOnClickListener(v -> {
+            finish();
+        });
+
+        findViewById(R.id.photoSave).setOnClickListener(v -> {
+            if(mWorkWrapper.isHDRPhoto()){
+                mStitchTask = new StitchTask(this);
+                mStitchTask.execute();
+            }else{
+                downloadFilesAndPlay(urls);
+            }
+        });
     }
 
     private void showGenerateResult() {
-        ImageParamsBuilder builder = new ImageParamsBuilder()
-                // 如果HDR合成成功，则将其文件路径设置为播放参数
-                // If HDR stitching is successful then set it as the playback proxy
-                .setUrlForPlay(mIsStitchHDRSuccessful ? mHDROutputPath : null);
-        mImagePlayerView.prepare(mWorkWrapper, builder);
-        mImagePlayerView.play();
+       if(mIsStitchHDRSuccessful){
+           finish();
+       }else {
+           // Need to add
+       }
     }
 
     private static class StitchTask extends AsyncTask<Void, Void, Boolean> {
-        private WeakReference<Insta360ImageViewer> activityWeakReference;
+        private WeakReference<Insta360ImagePreviewActivity> activityWeakReference;
         private MaterialDialog mDialog;
 
-        private StitchTask(Insta360ImageViewer activity) {
+        private StitchTask(Insta360ImagePreviewActivity activity) {
             super();
             activityWeakReference = new WeakReference<>(activity);
             mDialog = new MaterialDialog.Builder(activity)
@@ -94,7 +101,7 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
 
         @Override
         protected Boolean doInBackground(Void... voids) {
-            Insta360ImageViewer stitchActivity = activityWeakReference.get();
+            Insta360ImagePreviewActivity stitchActivity = activityWeakReference.get();
             if (stitchActivity != null && !isCancelled()) {
                 // Start HDR stitching
                 stitchActivity.mIsStitchHDRSuccessful = StitchUtils.generateHDR(stitchActivity.mWorkWrapper, stitchActivity.mHDROutputPath);
@@ -105,7 +112,7 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            Insta360ImageViewer stitchActivity = activityWeakReference.get();
+            Insta360ImagePreviewActivity stitchActivity = activityWeakReference.get();
             if (stitchActivity != null && !isCancelled()) {
                 stitchActivity.showGenerateResult();
             }

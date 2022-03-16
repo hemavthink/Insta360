@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         camerIcon.setOnClickListener(new View.OnClickListener() {
             //@Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, Insta360.class));
+                startActivity(new Intent(MainActivity.this, Insta360CameraPreviewActivity.class));
             }
         });
     }
