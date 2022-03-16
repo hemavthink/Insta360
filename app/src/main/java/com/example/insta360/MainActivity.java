@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
+
 public class MainActivity extends AppCompatActivity {
 
     private ImageView camerIcon;
@@ -18,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         camerIcon = findViewById(R.id.camerIcon);
+        checkStoragePermission();
         camerIcon.setOnClickListener(new View.OnClickListener() {
             //@Override
             public void onClick(View v) {
@@ -26,5 +30,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void checkStoragePermission() {
+        AndPermission.with(this)
+                .runtime()
+                .permission(Permission.Group.STORAGE)
+                .onDenied(permissions -> {
+                    if (AndPermission.hasAlwaysDeniedPermission(this, permissions)) {
+                        AndPermission.with(this)
+                                .runtime()
+                                .setting()
+                                .start(1000);
+                    }
+                    finish();
+                })
+                .start();
+    }
 
 }

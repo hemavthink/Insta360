@@ -14,6 +14,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.arashivision.sdk.demo.util.FileUtils;
 import com.arashivision.sdk.demo.util.TimeFormat;
 import com.arashivision.sdkcamera.camera.InstaCameraManager;
@@ -35,21 +37,22 @@ import com.arashivision.sdkcamera.camera.callback.ICameraChangedCallback;
 import com.arashivision.sdkcamera.camera.callback.ICaptureStatusListener;
 import com.arashivision.sdkcamera.camera.callback.ILiveStatusListener;
 import com.arashivision.sdkcamera.camera.callback.IPreviewStatusListener;
-import com.arashivision.sdkcamera.camera.live.LiveParamsBuilder;
-import com.arashivision.sdkcamera.camera.preview.ExposureData;
-import com.arashivision.sdkcamera.camera.preview.GyroData;
-import com.arashivision.sdkcamera.camera.preview.VideoData;
 import com.arashivision.sdkcamera.camera.resolution.PreviewStreamResolution;
 import com.arashivision.sdkmedia.player.capture.CaptureParamsBuilder;
 import com.arashivision.sdkmedia.player.capture.InstaCapturePlayerView;
 import com.arashivision.sdkmedia.player.listener.PlayerViewListener;
 import com.example.insta360.util.NetworkManager;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.FileCallback;
+import com.lzy.okgo.model.Response;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Insta360 extends AppCompatActivity implements ICameraChangedCallback,
-        IPreviewStatusListener, ICaptureStatusListener, ILiveStatusListener {
+        IPreviewStatusListener, ICaptureStatusListener {
 
     private ViewGroup mLayoutLoading;
     private Group mLayoutPlayer;
@@ -79,6 +82,14 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mLayoutLoading = findViewById(R.id.layout_loading);
         connectionSwitch = toolbar.findViewById(R.id.connection_switch);
         mCapturePlayerView = findViewById(R.id.player_capture);
+        mBtnCameraWork = findViewById(R.id.btn_camera_work);
+        mBtnCameraWork.setOnClickListener(v -> {
+            InstaCameraManager.getInstance().setCaptureStatusListener(this);
+            int funcMode = InstaCameraManager.FUNCTION_MODE_HDR_CAPTURE;
+            InstaCameraManager.getInstance().setAEBCaptureNum(funcMode, 3);
+            InstaCameraManager.getInstance().setExposureEV(funcMode, 2f);
+            InstaCameraManager.getInstance().startHDRCapture(false);
+        });
         setToggleListener();
         InstaCameraManager cameraManager = InstaCameraManager.getInstance();
         if (isCameraConnected()) {
@@ -176,6 +187,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
 
         // After connecting the camera, open preview stream and register listeners
         if (enabled) {
+            List<PreviewStreamResolution> supportedList = InstaCameraManager.getInstance().getSupportedPreviewStreamResolution(InstaCameraManager.PREVIEW_TYPE_NORMAL);
             InstaCameraManager.getInstance().setPreviewStatusChangedListener(this);
             InstaCameraManager.getInstance().startPreviewStream(PreviewStreamResolution.STREAM_1440_720_30FPS, InstaCameraManager.PREVIEW_TYPE_NORMAL);
         }
@@ -213,7 +225,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         });
         mCapturePlayerView.prepare(createCaptureParams());
         mCapturePlayerView.play();
-        mCapturePlayerView.setKeepScreenOn(true);
     }
 
     @Override
@@ -242,7 +253,8 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         return new CaptureParamsBuilder()
                 .setCameraType(InstaCameraManager.getInstance().getCameraType())
                 .setMediaOffset(InstaCameraManager.getInstance().getMediaOffset())
-                .setCameraSelfie(InstaCameraManager.getInstance().isCameraSelfie());
+                .setCameraSelfie(InstaCameraManager.getInstance().isCameraSelfie())
+                 .setLive(false);
     }
 
    /* Capture delegate or sdk methods */
@@ -253,10 +265,71 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
 
     @Override
     public void onCaptureFinish(String[] filePaths) {
-        mLayoutLoading.setVisibility(View.GONE);
+
         // After capture, the file paths will be returned. Then download, play and export operations can be performed
         // If it is HDR Capture, you must download images from the camera to the local to perform HDR stitching operation
-        Insta360ImageViewer.launchActivity(this, filePaths);
+        downloadFilesAndPlay(filePaths);
+    }
+
+    private void downloadFilesAndPlay(String[] urls) {
+        if (urls == null || urls.length == 0) {
+            return;
+        }
+
+        String localFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/SDK_DEMO_CAPTURE";
+        String[] fileNames = new String[urls.length];
+        String[] localPaths = new String[urls.length];
+        boolean needDownload = false;
+        for (int i = 0; i < localPaths.length; i++) {
+            fileNames[i] = urls[i].substring(urls[i].lastIndexOf("/") + 1);
+            localPaths[i] = localFolder + "/" + fileNames[i];
+            if (!new File(localPaths[i]).exists()) {
+                needDownload = true;
+            }
+        }
+
+        if (!needDownload) {
+            finish();
+            return;
+        }
+
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.osc_dialog_title_downloading)
+                .content(getString(R.string.osc_dialog_msg_downloading, urls.length, 0, 0))
+                .cancelable(false)
+                .canceledOnTouchOutside(false)
+                .show();
+
+        AtomicInteger successfulCount = new AtomicInteger(0);
+        AtomicInteger errorCount = new AtomicInteger(0);
+        for (int i = 0; i < localPaths.length; i++) {
+            String url = urls[i];
+            OkGo.<File>get(url)
+                    .execute(new FileCallback(localFolder, fileNames[i]) {
+
+                        @Override
+                        public void onError(Response<File> response) {
+                            super.onError(response);
+                            errorCount.incrementAndGet();
+                            checkDownloadCount();
+                        }
+
+                        @Override
+                        public void onSuccess(Response<File> response) {
+                            successfulCount.incrementAndGet();
+                            checkDownloadCount();
+                        }
+
+                        private void checkDownloadCount() {
+                            dialog.setContent(getString(R.string.osc_dialog_msg_downloading, urls.length, successfulCount.intValue(), errorCount.intValue()));
+                            if (successfulCount.intValue() + errorCount.intValue() >= urls.length) {
+                                mLayoutLoading.setVisibility(View.GONE);
+                                Insta360ImageViewer.launchActivity(Insta360.this, localPaths);
+                                dialog.dismiss();
+                            }
+                        }
+                    });
+        }
     }
 
     @Override
