@@ -18,8 +18,13 @@ import com.arashivision.sdkmedia.player.image.InstaImagePlayerView;
 import com.arashivision.sdkmedia.player.listener.PlayerViewListener;
 import com.arashivision.sdkmedia.stitch.StitchUtils;
 import com.arashivision.sdkmedia.work.WorkWrapper;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.FileCallback;
+import com.lzy.okgo.model.Response;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Insta360ImageViewer extends BaseObserveCameraActivity {
     InstaImagePlayerView mImagePlayerView;
@@ -46,15 +51,16 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
             Toast.makeText(this, R.string.play_toast_empty_path, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        mWorkWrapper = new WorkWrapper(urls);
         mImagePlayerView = findViewById(R.id.player_image);
-         mStitchTask = new StitchTask(this);
-         mStitchTask.execute();
+        mWorkWrapper = new WorkWrapper(urls);
+        if(mWorkWrapper.isHDRPhoto()){
+            mStitchTask = new StitchTask(this);
+            mStitchTask.execute();
+        }else{
+            mImagePlayerView.prepare(mWorkWrapper, new ImageParamsBuilder());
+            mImagePlayerView.play();
+        }
     }
-
-
-
 
     private void showGenerateResult() {
         ImageParamsBuilder builder = new ImageParamsBuilder()
@@ -64,7 +70,6 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
         mImagePlayerView.prepare(mWorkWrapper, builder);
         mImagePlayerView.play();
     }
-
 
     private static class StitchTask extends AsyncTask<Void, Void, Boolean> {
         private WeakReference<Insta360ImageViewer> activityWeakReference;
@@ -105,6 +110,65 @@ public class Insta360ImageViewer extends BaseObserveCameraActivity {
                 stitchActivity.showGenerateResult();
             }
             mDialog.dismiss();
+        }
+    }
+
+    private void downloadFilesAndPlay(String[] urls) {
+        if (urls == null || urls.length == 0) {
+            return;
+        }
+
+        String localFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/SDK_DEMO_CAPTURE";
+        String[] fileNames = new String[urls.length];
+        String[] localPaths = new String[urls.length];
+        boolean needDownload = false;
+        for (int i = 0; i < localPaths.length; i++) {
+            fileNames[i] = urls[i].substring(urls[i].lastIndexOf("/") + 1);
+            localPaths[i] = localFolder + "/" + fileNames[i];
+            if (!new File(localPaths[i]).exists()) {
+                needDownload = true;
+            }
+        }
+
+        if (!needDownload) {
+            return;
+        }
+
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.osc_dialog_title_downloading)
+                .content(getString(R.string.osc_dialog_msg_downloading, urls.length, 0, 0))
+                .cancelable(false)
+                .canceledOnTouchOutside(false)
+                .show();
+
+        AtomicInteger successfulCount = new AtomicInteger(0);
+        AtomicInteger errorCount = new AtomicInteger(0);
+        for (int i = 0; i < localPaths.length; i++) {
+            String url = urls[i];
+            OkGo.<File>get(url)
+                    .execute(new FileCallback(localFolder, fileNames[i]) {
+
+                        @Override
+                        public void onError(Response<File> response) {
+                            super.onError(response);
+                            errorCount.incrementAndGet();
+                            checkDownloadCount();
+                        }
+
+                        @Override
+                        public void onSuccess(Response<File> response) {
+                            successfulCount.incrementAndGet();
+                            checkDownloadCount();
+                        }
+
+                        private void checkDownloadCount() {
+                            dialog.setContent(getString(R.string.osc_dialog_msg_downloading, urls.length, successfulCount.intValue(), errorCount.intValue()));
+                            if (successfulCount.intValue() + errorCount.intValue() >= urls.length) {
+                                dialog.dismiss();
+                                finish();
+                            }
+                        }
+                    });
         }
     }
 }

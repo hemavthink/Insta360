@@ -71,7 +71,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_insta360);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        bindPlayerViews();
         toolbar = (Toolbar) findViewById(R.id.tbHeader);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -79,6 +78,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         layoutCameraArea = (LinearLayout) findViewById(R.id.shoot_area);
         mLayoutLoading = findViewById(R.id.layout_loading);
         connectionSwitch = toolbar.findViewById(R.id.connection_switch);
+        mCapturePlayerView = findViewById(R.id.player_capture);
         setToggleListener();
         InstaCameraManager cameraManager = InstaCameraManager.getInstance();
         if (isCameraConnected()) {
@@ -133,6 +133,7 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         }
     }
 
+    /*Toggle codes*/
     private void setToggleListener() {
         connectionSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -143,8 +144,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
                 } else {
                     layoutCameraArea.setVisibility(View.GONE);
                 }
-
-
             }
         });
         setToggleChange();
@@ -161,48 +160,8 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         });
     }
 
-
-    private void bindPlayerViews() {
-
-        mLayoutPlayer = findViewById(R.id.group_player);
-        mCapturePlayerView = findViewById(R.id.player_capture);
-        mCapturePlayerView.setLifecycle(getLifecycle());
-
-        mBtnCameraWork = findViewById(R.id.btn_camera_work);
-        mBtnCameraWork.setOnClickListener(v -> {
-            mIsCaptureButtonClicked = true;
-            if (!checkToRestartCameraPreviewStream()) {
-                doCameraWork();
-            }
-        });
-    }
-
     private boolean isCameraConnected() {
         return InstaCameraManager.getInstance().getCameraConnectedType() != InstaCameraManager.CONNECT_TYPE_NONE;
-    }
-
-    private void resetState() {
-        mIsCaptureButtonClicked = false;
-        mCurPreviewType = -1;
-        mCurPreviewResolution = null;
-        checkToRestartCameraPreviewStream();
-    }
-
-    // Get the preview mode currently to be turned on
-    private int getNewPreviewType() {
-        return InstaCameraManager.PREVIEW_TYPE_NORMAL;
-    }
-
-    // Get preview resolution
-    // Here, select 5.7k for recording, and select default from the support list for others
-    private PreviewStreamResolution getPreviewResolution(int previewType) {
-        // Optional resolution (as long as you feel the effect is OK)
-        if (previewType == InstaCameraManager.PREVIEW_TYPE_RECORD) {
-            return PreviewStreamResolution.STREAM_5760_2880_30FPS;
-        }
-
-        // Or choose one of the supported shooting modes of the current camera
-        return InstaCameraManager.getInstance().getSupportedPreviewStreamResolution(previewType).get(0);
     }
 
     private void openCamera(int connectType) {
@@ -213,52 +172,34 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     @Override
     public void onCameraStatusChanged(boolean enabled) {
         mLayoutLoading.setVisibility(View.GONE);
-        mLayoutPlayer.setVisibility(enabled ? View.VISIBLE : View.GONE);
-        resetState();
+       // mLayoutPlayer.setVisibility(enabled ? View.VISIBLE : View.GONE);
 
         // After connecting the camera, open preview stream and register listeners
         if (enabled) {
-            InstaCameraManager.getInstance().setCaptureStatusListener(this);
             InstaCameraManager.getInstance().setPreviewStatusChangedListener(this);
-            checkToRestartCameraPreviewStream();
+            InstaCameraManager.getInstance().startPreviewStream(PreviewStreamResolution.STREAM_1440_720_30FPS, InstaCameraManager.PREVIEW_TYPE_NORMAL);
         }
     }
 
     @Override
     public void onCameraConnectError() {
         mLayoutLoading.setVisibility(View.GONE);
-        mLayoutPlayer.setVisibility(View.GONE);
+      //  mLayoutPlayer.setVisibility(View.GONE);
     }
 
 
-
-
-    private boolean checkToRestartCameraPreviewStream() {
-        if (isCameraConnected()) {
-            int newPreviewType = getNewPreviewType();
-            PreviewStreamResolution newResolution = getPreviewResolution(newPreviewType);
-            if (mCurPreviewType != newPreviewType || mCurPreviewResolution != newResolution) {
-                mCurPreviewType = newPreviewType;
-                mCurPreviewResolution = newResolution;
-                InstaCameraManager.getInstance().closePreviewStream();
-                InstaCameraManager.getInstance().startPreviewStream(newResolution, newPreviewType);
-                return true;
-            }
-        }
-        return false;
-    }
-
+   /* Preview stream */
     @Override
     public void onOpening() {
         mLayoutLoading.setVisibility(View.VISIBLE);
-        mLayoutPlayer.setVisibility(View.VISIBLE);
+       // mLayoutPlayer.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void onOpened() {
         mLayoutLoading.setVisibility(View.GONE);
-
         InstaCameraManager.getInstance().setStreamEncode();
+
         mCapturePlayerView.setPlayerViewListener(new PlayerViewListener() {
             @Override
             public void onLoadingFinish() {
@@ -273,21 +214,6 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mCapturePlayerView.prepare(createCaptureParams());
         mCapturePlayerView.play();
         mCapturePlayerView.setKeepScreenOn(true);
-
-        // Record after preview is opened
-        if (mIsCaptureButtonClicked) {
-            mIsCaptureButtonClicked = false;
-            doCameraWork();
-        }
-    }
-
-    private CaptureParamsBuilder createCaptureParams() {
-        return new CaptureParamsBuilder()
-                .setCameraType(InstaCameraManager.getInstance().getCameraType())
-                .setMediaOffset(InstaCameraManager.getInstance().getMediaOffset())
-                .setCameraSelfie(InstaCameraManager.getInstance().isCameraSelfie())
-                .setLive(mCurPreviewType == InstaCameraManager.PREVIEW_TYPE_LIVE)  // 是否为直播模式
-                .setResolutionParams(mCurPreviewResolution.width, mCurPreviewResolution.height, mCurPreviewResolution.fps);
     }
 
     @Override
@@ -296,59 +222,30 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
         mCapturePlayerView.setKeepScreenOn(false);
     }
 
-
-
-    private void doCameraWork() {
-        if (mCurPreviewType != InstaCameraManager.PREVIEW_TYPE_LIVE && !InstaCameraManager.getInstance().isSdCardEnabled()) {
-            Toast.makeText(this, R.string.capture_toast_sd_card_error, Toast.LENGTH_SHORT).show();
-            mIsCaptureButtonClicked = false;
-//            mBtnCameraWork.setChecked(false);
-            return;
-        }
-        switch (mCurPreviewType) {
-            case InstaCameraManager.PREVIEW_TYPE_RECORD:
-                InstaCameraManager.getInstance().startNormalRecord();
-                break;
-            case InstaCameraManager.PREVIEW_TYPE_NORMAL:
-                mLayoutLoading.setVisibility(View.VISIBLE);
-                int funcMode = InstaCameraManager.FUNCTION_MODE_HDR_CAPTURE;
-                int type = InstaCameraManager.getInstance().getCurrentCaptureType();
-                InstaCameraManager.getInstance().setAEBCaptureNum(funcMode, 3);
-                InstaCameraManager.getInstance().setExposureEV(funcMode, 2f);
-                InstaCameraManager.getInstance().startHDRCapture(false);
-                break;
-            case InstaCameraManager.PREVIEW_TYPE_LIVE:
-                NetworkManager.getInstance().exchangeNetToMobile();
-                InstaCameraManager.getInstance().startLive(createLiveParams(), this);
-                break;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (isFinishing()) {
+            // Auto close preview after page loses focus
+            InstaCameraManager.getInstance().setPreviewStatusChangedListener(null);
+            InstaCameraManager.getInstance().closePreviewStream();
         }
     }
 
-    // All live streaming parameters are arbitrarily filled in according to your product requirements
-    private LiveParamsBuilder createLiveParams() {
-        return new LiveParamsBuilder()
-                .setRtmp("rtmp://txy.live-send.acg.tv/live-txy/?streamname=live_23968708_6785332&key=6abecd453e112c38f190f69fabc6d3da")
-                .setWidth(1440)
-                .setHeight(720)
-                .setFps(30)
-                .setBitrate(2 * 1024 * 1024)
-                .setPanorama(true)
-                // set NetId to use 4G to push live streaming when connecting camera by WIFI
-                .setNetId(NetworkManager.getInstance().getMobileNetId());
+    @Override
+    public void onError() {
+        // Preview Failed
     }
 
-    private void stopCameraWork() {
-        switch (mCurPreviewType) {
-            case InstaCameraManager.PREVIEW_TYPE_RECORD:
-                InstaCameraManager.getInstance().stopNormalRecord();
-                break;
-            case InstaCameraManager.PREVIEW_TYPE_LIVE:
-                InstaCameraManager.getInstance().stopLive();
-                NetworkManager.getInstance().clearBindProcess();
-                break;
-        }
+    /*Capture setting*/
+    private CaptureParamsBuilder createCaptureParams() {
+        return new CaptureParamsBuilder()
+                .setCameraType(InstaCameraManager.getInstance().getCameraType())
+                .setMediaOffset(InstaCameraManager.getInstance().getMediaOffset())
+                .setCameraSelfie(InstaCameraManager.getInstance().isCameraSelfie());
     }
 
+   /* Capture delegate or sdk methods */
     @Override
     public void onCaptureStopping() {
         mLayoutLoading.setVisibility(View.VISIBLE);
@@ -357,41 +254,9 @@ public class Insta360 extends AppCompatActivity implements ICameraChangedCallbac
     @Override
     public void onCaptureFinish(String[] filePaths) {
         mLayoutLoading.setVisibility(View.GONE);
-        checkToRestartCameraPreviewStream();
         // After capture, the file paths will be returned. Then download, play and export operations can be performed
         // If it is HDR Capture, you must download images from the camera to the local to perform HDR stitching operation
         Insta360ImageViewer.launchActivity(this, filePaths);
-    }
-
-
-
-    @Override
-    public void onLivePushStarted() {
-        Toast.makeText(this, R.string.full_demo_live_start, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onLivePushFinished() {
-//        mBtnCameraWork.setChecked(false);
-    }
-
-    @Override
-    public void onLivePushError() {
-//        mBtnCameraWork.setChecked(false);
-        Toast.makeText(this, R.string.full_demo_live_error, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (isFinishing()) {
-            // Destroy the preview when exiting the page
-            InstaCameraManager.getInstance().stopLive();
-            InstaCameraManager.getInstance().setPreviewStatusChangedListener(null);
-            InstaCameraManager.getInstance().closePreviewStream();
-            mCapturePlayerView.destroy();
-            NetworkManager.getInstance().clearBindProcess();
-        }
     }
 
     @Override
